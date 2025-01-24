@@ -1,9 +1,9 @@
 import random
 
 class colors:
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    END = '\033[0m'
+    GREEN = '\033[92m'   # Green for correct letter in the correct position
+    YELLOW = '\033[93m'  # Yellow for correct letter but in the wrong position
+    RESET = '\033[0m'    # Reset to default color after each colored letter
 
 def load_word_list():
     # A small sample of 5-letter words; you can replace this with a larger list or load from a file.
@@ -18,13 +18,22 @@ def get_guess():
 
 def give_feedback(guess, target_word):
     feedback = []
+    # To keep track of which letters have been matched for yellow feedback
+    target_word_copy = list(target_word)
+
     for i in range(len(guess)):
         if guess[i] == target_word[i]:
-            feedback.append(f"[{guess[i].upper()}]")  # Correct letter in the correct position
-        elif guess[i] in target_word:
-            feedback.append(f"({guess[i]})")  # Correct letter but in the wrong position
+            # Correct letter in the correct position: GREEN
+            feedback.append(f"{colors.GREEN}{guess[i].upper()}{colors.RESET}")
+            target_word_copy[i] = None  # Mark this position as matched
+        elif guess[i] in target_word_copy:
+            # Correct letter but in the wrong position: YELLOW
+            feedback.append(f"{colors.YELLOW}{guess[i].upper()}{colors.RESET}")
+            target_word_copy[target_word_copy.index(guess[i])] = None  # Mark this letter as matched
         else:
-            feedback.append(guess[i])  # Incorrect letter
+            # Incorrect letter: No color
+            feedback.append(guess[i])
+    
     return ''.join(feedback)
 
 def play_wordle():
